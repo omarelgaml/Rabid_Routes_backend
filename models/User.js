@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
-const Joi = require("joi");
-//////////////
+/// ///////////
 const UnAuthError = require("../config/noAuthError");
 const NotFoundError = require("../config/notFoundError");
 
@@ -15,7 +14,6 @@ const UserSchema = new Schema({
     lowercase: true,
     trim: true,
   },
-  name: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   firstName: { type: String },
   lastName: { type: String },
@@ -100,12 +98,6 @@ UserSchema.statics.generateResetPasswordToken = async function generate(email) {
   await user.save();
 
   return token;
-};
-const validateId = (value, helpers) => {
-  if (!mongoose.Types.ObjectId.isValid(value)) {
-    return helpers.message("Invalid MongoDB ObjectId");
-  }
-  return value;
 };
 
 mongoose.model("User", UserSchema);

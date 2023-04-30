@@ -1,3 +1,6 @@
+const Joi = require("joi");
+const mongoose = require("mongoose");
+
 const validateId = (value, helpers) => {
   if (!mongoose.Types.ObjectId.isValid(value)) {
     return helpers.message("Invalid MongoDB ObjectId");
@@ -11,42 +14,40 @@ exports.addUserValidation = Joi.object({
   firstName: Joi.string().min(2).max(30),
   lastName: Joi.string().min(2).max(30).allow(null, ""),
   title: Joi.string().min(2).max(6).allow(null, ""),
-  phoneNumber: Joi.string().pattern(new RegExp("^[0-9]{10}$")),
+  phoneNumber: Joi.string()
+    .pattern(/^\+[1-9]\d{10}$/)
+    .required(),
   roles: Joi.array().items(Joi.string().custom(validateId)).required(),
 });
 exports.updateUserValidation = Joi.object({
-  password: Joi.string().min(6).optional().not().null(),
-  firstName: Joi.string().alphanum().min(2).max(30).optional().not().null(),
-  lastName: Joi.string().alphanum().min(2).max(30).optional().not().null(),
+  password: Joi.string().min(6),
+  firstName: Joi.string().min(2).max(30),
+  lastName: Joi.string().min(2).max(30),
   title: Joi.string(),
-  phoneNumber: Joi.string().pattern(new RegExp("^[0-9]{10}$")),
-  roles: Joi.array()
-    .items(Joi.string().custom(validateId))
-    .optional()
-    .not()
-    .null(),
+  phoneNumber: Joi.string().pattern(/^\+[1-9]\d{10}$/),
+  roles: Joi.array().items(Joi.string().custom(validateId)),
 }).min(1);
 
 exports.updateParcelValidation = Joi.object({
   biker: Joi.string().custom(validateId),
   pickupAddress: Joi.object({
-    country: Joi.string().allow(null).optional().not().null(),
-    city: Joi.string().allow(null).optional().not().null(),
-    street: Joi.string().allow(null).optional().not().null(),
-    buildingNumber: Joi.string().allow(null).optional().not().null(),
-    floor: Joi.string().allow(null).optional().not().null(),
+    country: Joi.string().allow(null),
+    city: Joi.string().allow(null),
+    street: Joi.string().allow(null),
+    buildingNumber: Joi.string().allow(null),
+    floor: Joi.string().allow(null),
   }),
   dropoffAddress: Joi.object({
-    country: Joi.string().allow(null).optional().not().null(),
-    city: Joi.string().allow(null).optional().not().null(),
-    street: Joi.string().allow(null).optional().not().null(),
-    buildingNumber: Joi.string().allow(null).optional().not().null(),
-    floor: Joi.string().allow(null).optional().not().null(),
+    country: Joi.string().allow(null),
+    city: Joi.string().allow(null),
+    street: Joi.string().allow(null),
+    buildingNumber: Joi.string().allow(null),
+    floor: Joi.string().allow(null),
   }),
-  datePicked: Joi.date().allow(null).min(1).optional().not().null(),
-  dateDelivered: Joi.date().allow(null).min(1).optional().not().null(),
-  notes: Joi.string().allow(null).optional().not().null(),
-  status: Joi.string().optional().not().null(),
+  datePicked: Joi.date().allow(null).min(1),
+  dateDelivered: Joi.date().allow(null).min(1),
+  notes: Joi.string().allow(null),
+  status: Joi.string(),
 }).min(1);
 
 exports.addParcelValidation = (parcel) => {
