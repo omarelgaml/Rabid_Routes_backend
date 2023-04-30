@@ -10,6 +10,8 @@ if (process.env.NODE_ENV === "production") {
 }
 /// /////////////////////
 require("./config/database").connect();
+require("./config/mailing").setMailing();
+
 const {
   logError,
   isOperationalError,

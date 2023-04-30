@@ -62,3 +62,83 @@ exports.login = async (req, res, next) => {
     return next(error);
   }
 };
+
+exports.refreshToken = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) throw new BadRequestError("Token is missing");
+
+    const user = await User.findOne({ refreshToken });
+
+    if (!user) throw new UnAuthError("Invalid refresh token");
+
+    const accessToken = user.refreshAccessToken();
+
+    return res.status(httpStatusCodes.OK).json({ accessToken });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.logout = async (req, res, next) => {
+  try {
+    const { user } = req;
+
+    await User.updateOne(
+      { _id: user._id },
+      { $unset: { accessToken: 1, refreshToken: 1 } }
+    );
+
+    return res
+      .status(httpStatusCodes.NO_CONTENT_SUCCESS)
+      .json({ message: "User logged out" });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+exports.sendResPassEmail = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) throw new BadRequestError("Email is required");
+
+    const token = await User.generateResetPasswordToken(email);
+    await sendEmail(email, token);
+
+    return res.status(httpStatusCodes.NO_CONTENT_SUCCESS).json({});
+  } catch (err) {
+    return next(err);
+  }
+};
+
+exports.reSetPassword = async (req, res, next) => {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password)
+      throw new BadRequestError("Token and Password are required");
+
+    if (password.length < 6)
+      throw new BadRequestError("Password should be more than 6 characters");
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.findOne({ changePasswordToken: token });
+
+    if (!user) throw new UnAuthError("Expired or invalid token");
+    await user.veifyResetToken();
+
+    await User.updateOne(
+      { changePasswordToken: token },
+      {
+        password: hashedPassword,
+        $unset: { changePasswordToken: 1, accessToken: 1, refreshToken: 1 },
+      }
+    );
+
+    return res.status(httpStatusCodes.NO_CONTENT_SUCCESS).json({});
+  } catch (err) {
+    return next(err);
+  }
+};
