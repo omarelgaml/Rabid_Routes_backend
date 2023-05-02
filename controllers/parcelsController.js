@@ -70,3 +70,63 @@ exports.edit = async (req, res, next) => {
     next(err);
   }
 };
+exports.getAll = async (_req, res, next) => {
+  try {
+    const parcels = await Parcel.find()
+      .populate("sender")
+      .populate("biker")
+      .populate("status");
+    return res.status(httpStatusCodes.OK).json({ parcels });
+  } catch (err) {
+    return next(err);
+  }
+};
+exports.filterByStatus = async (req, res, next) => {
+  try {
+    const { status, role } = req.query;
+    let parcels;
+    if (role === "biker") {
+      if (status) {
+        parcels = await Parcel.find({
+          biker: req.user.id,
+          status,
+        })
+          .populate("sender")
+          .populate("biker")
+          .populate("status");
+      } else {
+        parcels = await Parcel.find({
+          biker: req.user.id,
+        })
+          .populate("sender")
+          .populate("biker")
+          .populate("status");
+      }
+    } else if (role === "sender") {
+      if (status) {
+        parcels = await Parcel.find({
+          sender: req.user.id,
+          status,
+        })
+          .populate("sender")
+          .populate("biker")
+          .populate("status");
+      } else {
+        parcels = await Parcel.find({
+          sender: req.user.id,
+        })
+          .populate("sender")
+          .populate("biker")
+          .populate("status");
+      }
+    } else {
+      parcels = await Parcel.find()
+        .populate("sender")
+        .populate("biker")
+        .populate("status");
+    }
+    return res.status(httpStatusCodes.OK).json({ parcels });
+  } catch (err) {
+    return next(err);
+  }
+};

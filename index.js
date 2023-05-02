@@ -19,10 +19,10 @@ const {
 const NotFoundError = require("./config/notFoundError");
 
 /// ////////////////////
+require("./models/ParcelStatus");
 require("./models/User");
 require("./models/Parcel");
 require("./models/Role");
-require("./models/ParcelStatus");
 
 /// ////////////////////
 const checkAuth = require("./middlewares/auth");
@@ -71,5 +71,6 @@ process.on("uncaughtException", (error) => {
 });
 
 app.listen(port, () => {
+  // eslint-disable-next-line no-console
   console.log(`Server running at http://localhost:${port}`);
 });
