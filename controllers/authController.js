@@ -5,6 +5,7 @@ const BadRequestError = require("../config/badReqError");
 const ConflictError = require("../config/conflictError");
 const httpStatusCodes = require("../config/httpStatusCodes.js ");
 const UnAuthError = require("../config/noAuthError");
+const { sendEmail } = require("../config/mailing");
 
 const User = mongoose.model("User");
 
@@ -86,6 +87,7 @@ exports.logout = async (req, res, next) => {
     const { user } = req;
 
     await User.updateOne(
+      // eslint-disable-next-line no-underscore-dangle
       { _id: user._id },
       { $unset: { accessToken: 1, refreshToken: 1 } }
     );

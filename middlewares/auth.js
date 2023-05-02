@@ -1,19 +1,17 @@
-const mongoose = require('mongoose');
-const UnAuthError = require('../config/noAuthError');
-const BadRequestError = require('../config/badReqError');
+const mongoose = require("mongoose");
+const UnAuthError = require("../config/noAuthError");
+const BadRequestError = require("../config/badReqError");
 
-const User = mongoose.model('User');
+const User = mongoose.model("User");
 module.exports = async (req, _res, next) => {
   try {
     if (!req.headers.authorization)
-      throw new BadRequestError('Token is missing');
+      throw new BadRequestError("Token is missing");
 
-    const token = req.headers.authorization.split(' ')[1];
+    const token = req.headers.authorization.split(" ")[1];
 
-    const user = await User.findOne({ accessToken: token }).populate(
-      'companyId'
-    );
-    if (!user) throw new UnAuthError('User not Authnticated');
+    const user = await User.findOne({ accessToken: token }).populate("roles");
+    if (!user) throw new UnAuthError("User not Authnticated");
 
     await user.veifyUserToken();
     req.user = user;

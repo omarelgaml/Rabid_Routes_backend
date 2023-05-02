@@ -47,29 +47,26 @@ exports.updateParcelValidation = Joi.object({
   datePicked: Joi.date().allow(null).min(1),
   dateDelivered: Joi.date().allow(null).min(1),
   notes: Joi.string().allow(null),
-  status: Joi.string(),
+  status: Joi.string().custom(validateId),
 }).min(1);
 
-exports.addParcelValidation = (parcel) => {
-  const schema = Joi.object({
-    sender: Joi.string().custom(validateId).required(),
-    biker: Joi.string().custom(validateId),
-    pickupAddress: Joi.object({
-      country: Joi.string().required(),
-      city: Joi.string().required(),
-      street: Joi.string().required(),
-      buildingNumber: Joi.string().required(),
-      floor: Joi.string().required(),
-    }).required(),
-    dropoffAddress: Joi.object({
-      country: Joi.string().required(),
-      city: Joi.string().required(),
-      street: Joi.string().required(),
-      buildingNumber: Joi.string().required(),
-      floor: Joi.string().required(),
-    }).required(),
-    notes: Joi.string(),
-    status: Joi.objectId().required(),
-  });
-  return schema.validate(parcel);
-};
+exports.addParcelValidation = Joi.object({
+  //  sender: Joi.string().custom(validateId).required(),
+  // biker: Joi.string().custom(validateId),
+  pickupAddress: Joi.object({
+    country: Joi.string().required(),
+    city: Joi.string().required(),
+    street: Joi.string().required(),
+    buildingNumber: Joi.string().required(),
+    floor: Joi.string().required(),
+  }).required(),
+  dropoffAddress: Joi.object({
+    country: Joi.string().required(),
+    city: Joi.string().required(),
+    street: Joi.string().required(),
+    buildingNumber: Joi.string().required(),
+    floor: Joi.string().required(),
+  }).required(),
+  notes: Joi.string(),
+  status: Joi.string().custom(validateId).required(),
+});

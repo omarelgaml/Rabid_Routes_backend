@@ -11,7 +11,6 @@ if (process.env.NODE_ENV === "production") {
 /// /////////////////////
 require("./config/database").connect();
 require("./config/mailing").setMailing();
-
 const {
   logError,
   isOperationalError,
@@ -26,8 +25,13 @@ require("./models/Role");
 require("./models/ParcelStatus");
 
 /// ////////////////////
+const checkAuth = require("./middlewares/auth");
+
+/// ////////////////////
 
 const authRoutes = require("./routes/authRoutes");
+const parcelsRoutes = require("./routes/parcelsRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 /// ////////////////////
 
@@ -35,6 +39,8 @@ const app = express();
 app.use(bodyParser.json());
 const port = 3000;
 app.use("/api/auth", authRoutes);
+app.use("/api/parcels", checkAuth, parcelsRoutes);
+app.use("/api/user", checkAuth, userRoutes);
 
 /// ////////////////////
 

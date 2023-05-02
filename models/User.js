@@ -46,7 +46,7 @@ UserSchema.methods.generateToken = function generateToken() {
   user.refreshToken = refreshToken;
 
   user.save();
-  user.populate("companyId");
+  user.populate("roles");
   return user;
 };
 

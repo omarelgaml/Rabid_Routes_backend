@@ -71,7 +71,7 @@ const ParcelSchema = new Schema({
   },
   status: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Status",
+    ref: "ParcelStatus",
     required: true,
   },
 });
