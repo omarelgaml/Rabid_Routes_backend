@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 
 const { Schema } = mongoose;
 
+const Status = mongoose.model("ParcelStatus");
+
 const ParcelSchema = new Schema({
   sender: {
     type: mongoose.Schema.Types.ObjectId,
@@ -15,6 +17,9 @@ const ParcelSchema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
   },
   pickupAddress: {
     country: {
@@ -66,14 +71,23 @@ const ParcelSchema = new Schema({
   dateDelivered: {
     type: Date,
   },
-  notes: {
+  bikerNotes: {
+    type: String,
+  },
+  senderNotes: {
     type: String,
   },
   status: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "ParcelStatus",
-    required: true,
   },
 });
-
+ParcelSchema.pre("save", async function updateAt(next) {
+  this.updatedAt = Date.now;
+  if (!this.status) {
+    const created = await Status.findOne({ code: 1 });
+    this.status = created ? created.id : "";
+  }
+  next();
+});
 mongoose.model("Parcel", ParcelSchema);

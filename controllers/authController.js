@@ -8,16 +8,22 @@ const UnAuthError = require("../config/noAuthError");
 const { sendEmail } = require("../config/mailing");
 
 const User = mongoose.model("User");
+const Role = mongoose.model("Role");
 
 exports.signup = async (req, res, next) => {
   try {
     const { error } = validations.addUserValidation.validate(req.body);
     if (error) throw new BadRequestError(error.details[0].message);
 
-    const { email, password, firstName, lastName, title, phoneNumber, roles } =
+    const { email, password, firstName, lastName, title, phoneNumber, role } =
       req.body;
+    const sentRole = await Role.findById(role);
+    if (!sentRole) throw new BadRequestError("Provide a valid role");
+
     const existingUser = await User.find({ email });
+
     if (existingUser.length) throw new ConflictError("User already exists");
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = new User({
@@ -27,7 +33,7 @@ exports.signup = async (req, res, next) => {
       lastName,
       title,
       phoneNumber,
-      roles,
+      role,
     });
 
     await user.save();

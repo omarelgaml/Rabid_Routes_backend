@@ -17,7 +17,7 @@ exports.addUserValidation = Joi.object({
   phoneNumber: Joi.string()
     .pattern(/^\+[1-9]\d{10}$/)
     .required(),
-  roles: Joi.array().items(Joi.string().custom(validateId)).required(),
+  role: Joi.string().custom(validateId).required(),
 });
 exports.updateUserValidation = Joi.object({
   password: Joi.string().min(6),
@@ -25,7 +25,7 @@ exports.updateUserValidation = Joi.object({
   lastName: Joi.string().min(2).max(30),
   title: Joi.string(),
   phoneNumber: Joi.string().pattern(/^\+[1-9]\d{10}$/),
-  roles: Joi.array().items(Joi.string().custom(validateId)),
+  role: Joi.string().custom(validateId),
 }).min(1);
 
 exports.updateParcelValidation = Joi.object({
@@ -46,7 +46,9 @@ exports.updateParcelValidation = Joi.object({
   }),
   datePicked: Joi.date().allow(null).min(1),
   dateDelivered: Joi.date().allow(null).min(1),
-  notes: Joi.string().allow(null),
+  bikerNotes: Joi.string().allow(null),
+  senderNotes: Joi.string().allow(null),
+
   status: Joi.string().custom(validateId),
 }).min(1);
 
@@ -67,6 +69,5 @@ exports.addParcelValidation = Joi.object({
     buildingNumber: Joi.string().required(),
     floor: Joi.string().required(),
   }).required(),
-  notes: Joi.string(),
-  status: Joi.string().custom(validateId).required(),
+  bikerNotes: Joi.string(),
 });

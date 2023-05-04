@@ -14,17 +14,17 @@ const UserSchema = new Schema({
     lowercase: true,
     trim: true,
   },
+  createdAt: { type: Date, default: Date.now },
   password: { type: String, required: true },
   firstName: { type: String },
   lastName: { type: String },
   title: { type: String },
   phoneNumber: { type: String },
-  roles: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Role",
-    },
-  ],
+  role: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Role",
+  },
+
   accessToken: { type: String },
   refreshToken: { type: String },
   changePasswordToken: { type: String },
@@ -46,7 +46,7 @@ UserSchema.methods.generateToken = function generateToken() {
   user.refreshToken = refreshToken;
 
   user.save();
-  user.populate("roles");
+  user.populate("role");
   return user;
 };
 

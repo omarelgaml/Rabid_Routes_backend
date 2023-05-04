@@ -34,7 +34,7 @@ exports.updateUser = async (req, res, next) => {
     user.lastName = value.lastName || user.lastName;
     user.title = value.title || user.title;
     user.phoneNumber = value.phoneNumber || user.phoneNumber;
-    user.roles = value.roles || user.roles;
+    user.role = value.role || user.role;
 
     await user.save();
 

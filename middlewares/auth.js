@@ -10,7 +10,7 @@ module.exports = async (req, _res, next) => {
 
     const token = req.headers.authorization.split(" ")[1];
 
-    const user = await User.findOne({ accessToken: token }).populate("roles");
+    const user = await User.findOne({ accessToken: token }).populate("role");
     if (!user) throw new UnAuthError("User not Authnticated");
 
     await user.veifyUserToken();
