@@ -5,17 +5,19 @@ const httpStatusCodes = require("../config/httpStatusCodes.js ");
 const NotFoundError = require("../config/notFoundError");
 
 const Parcel = mongoose.model("Parcel");
+const ParcelStatus = mongoose.model("ParcelStatus");
 
 exports.add = async (req, res, next) => {
   try {
     const { error } = validations.addParcelValidation.validate(req.body);
     if (error) throw new BadRequestError(error.details[0].message);
 
-    const { pickupAddress, dropoffAddress } = req.body;
+    const { pickupAddress, dropoffAddress, senderNotes } = req.body;
     const newParcel = new Parcel({
       sender: req.user.id,
       pickupAddress,
       dropoffAddress,
+      senderNotes,
     });
     await newParcel.save();
 
@@ -144,5 +146,13 @@ exports.delete = async (req, res, next) => {
     res.status(httpStatusCodes.OK).json({ message: "Parcel Deleted" });
   } catch (err) {
     next(err);
+  }
+};
+exports.getStatuses = async (_req, res, next) => {
+  try {
+    const statuses = await ParcelStatus.find();
+    return res.status(httpStatusCodes.OK).json({ statuses });
+  } catch (err) {
+    return next(err);
   }
 };

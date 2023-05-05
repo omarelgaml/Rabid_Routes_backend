@@ -38,12 +38,6 @@ const userRoutes = require("./routes/userRoutes");
 const app = express();
 app.use(bodyParser.json());
 const port = 3000;
-app.use("/api/auth", authRoutes);
-app.use("/api/parcels", checkAuth, parcelsRoutes);
-app.use("/api/user", checkAuth, userRoutes);
-
-/// ////////////////////
-
 app.use(
   cors({
     origin: "http://localhost:8000",
@@ -51,6 +45,12 @@ app.use(
     credentials: true,
   })
 );
+
+app.use("/api/auth", authRoutes);
+app.use("/api/parcels", checkAuth, parcelsRoutes);
+app.use("/api/user", checkAuth, userRoutes);
+
+/// ////////////////////
 
 app.use((_req, _res, next) => {
   next(new NotFoundError("Not found rout"));

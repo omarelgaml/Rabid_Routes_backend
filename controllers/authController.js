@@ -49,17 +49,16 @@ exports.signup = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-
     if (!email || !password)
       throw new BadRequestError("Email and Password are required");
     let user = await User.findOne({ email });
 
-    if (!user) throw new UnAuthError("Email and/or Password are wrong ");
+    if (!user) throw new BadRequestError("Email and/or Password are wrong ");
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      throw new UnAuthError("Email and/or Password are wrong ");
+      throw new BadRequestError("Email and/or Password are wrong ");
     }
 
     user = await user.generateToken();
@@ -108,14 +107,14 @@ exports.logout = async (req, res, next) => {
 
 exports.sendResPassEmail = async (req, res, next) => {
   try {
-    const { email } = req.body;
+    const { email, redirect } = req.body;
 
     if (!email) throw new BadRequestError("Email is required");
 
     const token = await User.generateResetPasswordToken(email);
-    await sendEmail(email, token);
+    await sendEmail(email, token, redirect);
 
-    return res.status(httpStatusCodes.NO_CONTENT_SUCCESS).json({});
+    return res.status(httpStatusCodes.OK).json({ message: "Email Sent!" });
   } catch (err) {
     return next(err);
   }
@@ -145,7 +144,9 @@ exports.reSetPassword = async (req, res, next) => {
       }
     );
 
-    return res.status(httpStatusCodes.NO_CONTENT_SUCCESS).json({});
+    return res
+      .status(httpStatusCodes.OK)
+      .json({ message: "Password Updated!" });
   } catch (err) {
     return next(err);
   }
