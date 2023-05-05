@@ -20,7 +20,7 @@ exports.signup = async (req, res, next) => {
     const sentRole = await Role.findById(role);
     if (!sentRole) throw new BadRequestError("Provide a valid role");
 
-    const existingUser = await User.find({ email });
+    const existingUser = await User.find({ email, role });
 
     if (existingUser.length) throw new ConflictError("User already exists");
 
@@ -48,10 +48,10 @@ exports.signup = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
     if (!email || !password)
       throw new BadRequestError("Email and Password are required");
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ email, role });
 
     if (!user) throw new BadRequestError("Email and/or Password are wrong ");
 
@@ -147,6 +147,16 @@ exports.reSetPassword = async (req, res, next) => {
     return res
       .status(httpStatusCodes.OK)
       .json({ message: "Password Updated!" });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+exports.getRole = async (req, res, next) => {
+  try {
+    const { code } = req.params;
+    const role = await Role.find({ code });
+    return res.status(httpStatusCodes.OK).json({ role: role[0] });
   } catch (err) {
     return next(err);
   }

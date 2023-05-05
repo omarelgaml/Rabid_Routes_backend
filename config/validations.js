@@ -53,7 +53,7 @@ exports.updateUserValidation = Joi.object({
   firstName: Joi.string().min(2).max(30),
   lastName: Joi.string().min(2).max(30),
   title: Joi.string(),
-  phoneNumber: Joi.string().pattern(/^\+[1-9]\d{10}$/),
+  phoneNumber: Joi.number(),
   role: Joi.string().custom(validateId),
 }).min(1);
 

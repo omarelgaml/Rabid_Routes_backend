@@ -40,7 +40,7 @@ app.use(bodyParser.json());
 const port = 3000;
 app.use(
   cors({
-    origin: "http://localhost:8000",
+    origin: ["http://localhost:8000", "http://localhost:8001"],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
   })

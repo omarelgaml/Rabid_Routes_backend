@@ -46,11 +46,7 @@ exports.edit = async (req, res, next) => {
     } = req.body;
 
     const parcel = await Parcel.findById(id);
-    if (
-      parcel.biker &&
-      parcel.biker !== req.user.id &&
-      req.user.role.code === 2 /* code for biker biker */
-    )
+    if (parcel.biker && req.user.role.code === 1)
       throw new BadRequestError(
         "You can not update Parcel after biker selectd it"
       );
@@ -78,7 +74,9 @@ exports.edit = async (req, res, next) => {
 };
 exports.getUnAssigned = async (_req, res, next) => {
   try {
-    const parcels = await Parcel.find({ biker: "" })
+    const parcels = await Parcel.find({
+      $or: [{ biker: { $exists: false } }, { biker: { $eq: null } }],
+    })
       .populate("sender")
       .populate("status");
     return res.status(httpStatusCodes.OK).json({ parcels });
